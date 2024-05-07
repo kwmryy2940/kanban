@@ -66,7 +66,7 @@
           </v-snackbar>
         </v-card-text>
 
-        <v-card-action>
+        <v-card-actions>
           <v-btn
             color="blue-darken-1"
             variant="text"
@@ -77,7 +77,7 @@
           <v-btn color="blue-darken-1" variant="text">
             登録
           </v-btn>
-        </v-card-action>
+        </v-card-actions>
       </v-card>
     </template>
   </v-dialog>
