@@ -1,6 +1,6 @@
 <template>
   <!-- タスク登録ボタン -->
-  <v-dialog>
+  <v-dialog v-model="dialog">
     <template v-slot:activator="{ props: activatorProps }">
       <v-btn
         v-bind="activatorProps"
@@ -37,8 +37,6 @@
                     :rules="validationRules.ticketDetail"
                   ></v-text-field>
                 </v-col>
-              </v-row>
-              <v-row>
                 <v-col>
                   <v-select
                     v-model="editedItem.userId"
@@ -64,22 +62,6 @@
               </v-row>
             </v-form>
           </v-container>
-          <v-snackbar v-model="noticeSnackBar" :timeout="5000" color="success">
-            <v-icon class="me-2" size="small">
-              mdi-check-circle-outline
-            </v-icon>
-            {{ noticeSnackBarText }}
-            <template v-slot:actions>
-              <v-btn
-                color="white"
-                variant="text"
-                @click="noticeSnackBar = false"
-              >
-                閉じる
-              </v-btn>
-            </template>
-          </v-snackbar>
-
           <v-snackbar v-model="errorSnackBar" :timeout="5000" color="error">
             <v-icon class="me-2" size="small">
               mdi-alert-circle-outline
@@ -101,7 +83,7 @@
           <v-btn
             color="blue-darken-1"
             variant="text"
-            @click="isActive.value = false"
+            @click="dialog = false"
           >
             キャンセル
           </v-btn>
@@ -117,8 +99,10 @@
 <script setup>
 import { onMounted, ref } from "vue";
 
-const noticeSnackBar = ref(false); // 通知バーの表示を管理する変数
-const noticeSnackBarText = ref(false); // 通知バーの通知内容
+const dialog=ref(false);
+
+const emit = defineEmits(['add-data']);
+
 const errorSnackBar = ref(false); // エラー通知バーの表示を管理する変数
 const errorSnackBarText = ref(""); // エラー通知バーの通知内容
 
@@ -204,10 +188,9 @@ async function save() {
       errorSnackBarText.value = "タスクの登録に失敗しました。";
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    noticeSnackBar.value = true;
-    noticeSnackBarText.value = "タスクを登録しました。";
+    emit('add-data',true);
     clearItems();
-    return 0;
+    dialog.value=false;
   } catch (error) {
     // エラー時にsnackbarの状態を更新
     errorSnackBar.value = true;
@@ -218,12 +201,7 @@ async function save() {
 
 onMounted(async()=>{
   userList.value=await fetchUserData();
-
-  console.log(userList.value);
-
   categoryList.value=await fetchCategoryData();
-  
-  console.log(categoryList.value);
 })
 
 </script>

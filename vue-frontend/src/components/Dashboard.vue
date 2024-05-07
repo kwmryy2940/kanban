@@ -11,9 +11,9 @@
       <DashboardMobile />
     </template>
     <template v-else>
-      <DashboardDesktop />
+      <DashboardDesktop :isAddTicket="isAddTicket"/>
     </template>
-    <AddKanban />
+    <AddKanban @add-data="addData"/>
   </div>
 </template>
 
@@ -24,4 +24,10 @@ import DashboardDesktop from "./DashboardDesktop.vue";
 import AddKanban from "./AddKanban.vue";
 
 const mobile = ref(false);
+const isAddTicket=ref(false);
+
+function addData(addData){
+  isAddTicket.value=addData;
+}
+
 </script>
