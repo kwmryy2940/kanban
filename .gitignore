@@ -37,3 +37,10 @@ out/
 .vscode/
 .env
 docs/*
+src/main/resources/static/index.html
+src/main/resources/static/assets/index.css
+src/main/resources/static/assets/index.js
+src/main/resources/static/assets/materialdesignicons-webfont.eot
+src/main/resources/static/assets/materialdesignicons-webfont.ttf
+src/main/resources/static/assets/materialdesignicons-webfont.woff
+src/main/resources/static/assets/materialdesignicons-webfont.woff2
