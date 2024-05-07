@@ -1,12 +1,12 @@
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
+import { defineConfig } from "vite";
+import vue from "@vitejs/plugin-vue";
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [vue()],
   base: "/",
-  build:{
-    outDir:'../src/main/resources/static',
+  build: {
+    outDir: "../src/main/resources/static",
     emptyOutDir: true,
     rollupOptions: {
       output: {
@@ -15,5 +15,10 @@ export default defineConfig({
         assetFileNames: `assets/[name].[ext]`,
       },
     },
-  }
-})
+  },
+  server: {
+    proxy: {
+      "/api": "http://localhost:8080",
+    },
+  },
+});
