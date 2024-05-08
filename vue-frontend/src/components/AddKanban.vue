@@ -84,11 +84,7 @@
         </v-card-text>
 
         <v-card-actions>
-          <v-btn
-            color="blue-darken-1"
-            variant="text"
-            @click="dialog = false"
-          >
+          <v-btn color="blue-darken-1" variant="text" @click="dialog = false">
             キャンセル
           </v-btn>
           <v-btn color="blue-darken-1" variant="text" @click="save">
@@ -101,12 +97,20 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { apiUrl } from "../../config";
 
-const dialog=ref(false);
+const props = defineProps({
+  isAddCompletedTicket: Boolean,
+  isAddCompletedTicketByMobile: Boolean,
+});
 
-const emit = defineEmits(['add-data']);
+const isAddCompletedTicket = () => props.isAddCompletedTicket;
+const isAddCompletedTicketByMobile = () => props.isAddCompletedTicketByMobile;
+
+const dialog = ref(false);
+
+const emit = defineEmits(["add-data"]);
 
 const errorSnackBar = ref(false); // エラー通知バーの表示を管理する変数
 const errorSnackBarText = ref(""); // エラー通知バーの通知内容
@@ -118,8 +122,8 @@ const editedItem = ref({
   ticketDetail: "",
 });
 
-const userList=ref([]);
-const categoryList=ref([]);
+const userList = ref([]);
+const categoryList = ref([]);
 
 // 各項目の入力に対するバリデーションルール
 const validationRules = ref({
@@ -147,14 +151,14 @@ async function clearItems() {
   editedItem.value.ticketDetail = "";
 }
 
-async function fetchUserData(){
-  const response = await fetch(apiUrl+"/api/v1/tm_users");
+async function fetchUserData() {
+  const response = await fetch(apiUrl + "/api/v1/tm_users");
   const data = await response.json();
   return data;
 }
 
-async function fetchCategoryData(){
-  const response = await fetch(apiUrl+"/api/v1/tm_category");
+async function fetchCategoryData() {
+  const response = await fetch(apiUrl + "/api/v1/tm_category");
   const data = await response.json();
   return data;
 }
@@ -164,7 +168,7 @@ async function registerData() {
     ...editedItem.value,
   };
 
-  const response = await fetch(apiUrl+"/api/v1/td_ticket", {
+  const response = await fetch(apiUrl + "/api/v1/td_ticket", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -193,9 +197,9 @@ async function save() {
       errorSnackBarText.value = "タスクの登録に失敗しました。";
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    emit('add-data',true);
+    emit("add-data", true);
     clearItems();
-    dialog.value=false;
+    dialog.value = false;
   } catch (error) {
     // エラー時にsnackbarの状態を更新
     errorSnackBar.value = true;
@@ -204,9 +208,16 @@ async function save() {
   }
 }
 
-onMounted(async()=>{
-  userList.value=await fetchUserData();
-  categoryList.value=await fetchCategoryData();
-})
+watch(isAddCompletedTicket, (newVal, oldVal) => {
+  emit("add-data", false);
+});
 
+watch(isAddCompletedTicketByMobile, (newVal, oldVal) => {
+  emit("add-data", false);
+});
+
+onMounted(async () => {
+  userList.value = await fetchUserData();
+  categoryList.value = await fetchCategoryData();
+});
 </script>

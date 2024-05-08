@@ -243,6 +243,8 @@ import { onMounted, ref, watch } from "vue";
 import draggable from "vuedraggable";
 import { apiUrl } from "../../config.js";
 
+const emit = defineEmits(['add-data-completed']);
+
 const props = defineProps({
   isAddTicket: Boolean,
 });
@@ -535,10 +537,18 @@ async function loadTicketData() {
 }
 
 watch(isAddTicket, (newVal, oldVal) => {
+
+  console.log("isAddTicket.newVal=",newVal);
+  console.log("isAddTicket.oldVal=",oldVal);
+
   if (oldVal === false && newVal === true) {
     loadTicketData();
     noticeSnackBar.value = true;
     noticeSnackBarText.value = "タスクを登録しました。";
+    emit('add-data-completed',true);
+  }
+  else{
+    emit('add-data-completed',false);
   }
 });
 
