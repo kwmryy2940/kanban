@@ -176,6 +176,7 @@
 <script setup>
 import { computed, onMounted, ref, watch } from "vue";
 import { apiUrl } from "../../config.js";
+import { commonFunctions } from "../utils/utils.js";
 
 const dialog=ref(false);
 const tab = ref(null);
@@ -234,33 +235,13 @@ async function validate() {
   return validationResult.valid;
 }
 
-
-async function fetchData() {
-  const response = await fetch("/api/v1/td_ticket");
-  const data = await response.json();
-  return data;
-}
-
-async function fetchUserData() {
-  const response = await fetch(apiUrl + "/api/v1/tm_users");
-  const data = await response.json();
-  return data;
-}
-
-async function fetchCategoryData() {
-  const response = await fetch(apiUrl + "/api/v1/tm_category");
-  const data = await response.json();
-  return data;
-}
-
-
 async function loadTicketData() {
   tasks.value.todos = [];
   tasks.value.inProgress = [];
   tasks.value.completed = [];
 
   try {
-    const data = await fetchData();
+    const data = await commonFunctions.fetchTicketData(apiUrl);;
     data.forEach((item) => {
       if (item.status === 0) tasks.value.todos.push(item);
       else if (item.status === 1) tasks.value.inProgress.push(item);
@@ -378,8 +359,8 @@ async function deleteTicketData(ticketId, status) {
 
 onMounted(async () => {
   loadTicketData();
-  userList.value = await fetchUserData();
-  categoryList.value = await fetchCategoryData();
+  userList.value = await commonFunctions.fetchUserData(apiUrl);
+  categoryList.value = await commonFunctions.fetchCategoryData(apiUrl);
 });
 
 watch(isAddTicket, (newVal, oldVal) => {

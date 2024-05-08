@@ -33,6 +33,7 @@ import { ref } from "vue";
 import DashboardMobile from "./DashboardMobile.vue";
 import DashboardDesktop from "./DashboardDesktop.vue";
 import AddKanban from "./AddKanban.vue";
+import { commonFunctions } from "../utils/utils";
 
 const mobile = ref(false);
 const isAddTicket = ref(false);

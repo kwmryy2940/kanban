@@ -1,6 +1,7 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from "./router";
+import {commonFunctions} from "./utils/utils"
 
 // Vuetify のインポートを追加 **********/
 import "@mdi/font/css/materialdesignicons.css";
@@ -17,4 +18,5 @@ const vuetify = createVuetify({
 const app = createApp(App);
 app.use(vuetify);
 app.use(router);
+app.use(commonFunctions);
 app.mount("#app");
