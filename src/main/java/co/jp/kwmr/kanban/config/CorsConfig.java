@@ -9,6 +9,7 @@ public class CorsConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/api/**")  // 適用するパスを指定
                 .allowedOrigins("http://localhost:5173") // 許可するオリジンを指定
+                .allowedOrigins("http://localhost:5174") // 許可するオリジンを指定
                 .allowedMethods("GET", "POST", "PUT", "DELETE"); // 許可するHTTPメソッドを指定
     }
 }
