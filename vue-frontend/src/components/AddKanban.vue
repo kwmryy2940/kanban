@@ -24,23 +24,26 @@
                   <v-text-field
                     v-model="editedItem.ticketTitle"
                     label="タイトル"
+                    variant="outlined"
                     maxlength="128"
                     :rules="validationRules.ticketTitle"
                     ><span style="color: red"> *</span></v-text-field
                   >
                 </v-col>
                 <v-col cols="12">
-                  <v-text-field
+                  <v-textarea
                     v-model="editedItem.ticketDetail"
                     label="内容"
+                    variant="outlined"
                     maxlength="512"
                     :rules="validationRules.ticketDetail"
-                  ></v-text-field>
+                  ></v-textarea>
                 </v-col>
                 <v-col>
                   <v-select
                     v-model="editedItem.userId"
                     label="担当者"
+                    variant="outlined"
                     :items="userList"
                     item-title="userName"
                     item-value="id"
@@ -52,6 +55,7 @@
                   <v-select
                     v-model="editedItem.categoryId"
                     label="カテゴリ"
+                    variant="outlined"
                     :items="categoryList"
                     item-title="categoryName"
                     item-value="id"
@@ -98,6 +102,7 @@
 
 <script setup>
 import { onMounted, ref } from "vue";
+import { apiUrl } from "../../config";
 
 const dialog=ref(false);
 
@@ -143,13 +148,13 @@ async function clearItems() {
 }
 
 async function fetchUserData(){
-  const response = await fetch("/api/v1/tm_users");
+  const response = await fetch(apiUrl+"/api/v1/tm_users");
   const data = await response.json();
   return data;
 }
 
 async function fetchCategoryData(){
-  const response = await fetch("/api/v1/tm_category");
+  const response = await fetch(apiUrl+"/api/v1/tm_category");
   const data = await response.json();
   return data;
 }
@@ -159,7 +164,7 @@ async function registerData() {
     ...editedItem.value,
   };
 
-  const response = await fetch("/api/v1/td_ticket", {
+  const response = await fetch(apiUrl+"/api/v1/td_ticket", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

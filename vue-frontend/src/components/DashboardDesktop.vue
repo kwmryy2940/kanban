@@ -4,7 +4,7 @@
       <v-row justify="center">
         <v-col cols="12" sm="4">
           <v-sheet class="pa-1 ma-1 border">
-            <h4>ToDos</h4>
+            <h4 class="title-todos">未着手</h4>
             <draggable
               v-model="tasks.todos"
               group="my-group"
@@ -16,7 +16,12 @@
             >
               <template #item="{ element }">
                 <v-list>
-                  <v-card class="handle">
+                  <v-card
+                    class="handle"
+                    elevation="0"
+                    variant="outlined"
+                    @dblclick="openEditDiaolog(element)"
+                  >
                     <v-card-item :title="element.ticketTitle"></v-card-item>
                     <v-list-item>
                       <v-list-item-subtitle
@@ -48,7 +53,7 @@
         </v-col>
         <v-col cols="12" sm="4">
           <v-sheet class="pa-1 ma-1 border">
-            <h4>InProgress</h4>
+            <h4 class="title-inprogress">処理中</h4>
             <draggable
               v-model="tasks.inProgress"
               group="my-group"
@@ -60,7 +65,12 @@
             >
               <template #item="{ element }">
                 <v-list>
-                  <v-card class="handle">
+                  <v-card
+                    class="handle"
+                    elevation="0"
+                    variant="outlined"
+                    @dblclick="openEditDiaolog(element)"
+                  >
                     <v-card-item :title="element.ticketTitle"></v-card-item>
                     <v-list-item>
                       <v-list-item-subtitle
@@ -92,7 +102,7 @@
         </v-col>
         <v-col cols="12" sm="4">
           <v-sheet class="pa-1 ma-1 border">
-            <h4>Completed</h4>
+            <h4 class="title-completed">完了</h4>
             <draggable
               v-model="tasks.completed"
               group="my-group"
@@ -104,7 +114,12 @@
             >
               <template #item="{ element }">
                 <v-list>
-                  <v-card class="handle">
+                  <v-card
+                    class="handle"
+                    elevation="0"
+                    variant="outlined"
+                    @dblclick="openEditDiaolog(element)"
+                  >
                     <v-card-item :title="element.ticketTitle"></v-card-item>
                     <v-list-item>
                       <v-list-item-subtitle
@@ -146,18 +161,20 @@
                     <v-text-field
                       v-model="editedItem.ticketTitle"
                       label="タイトル"
+                      variant="outlined"
                       maxlength="128"
                       :rules="validationRules.ticketTitle"
                       ><span style="color: red"> *</span></v-text-field
                     >
                   </v-col>
                   <v-col cols="12">
-                    <v-text-field
+                    <v-textarea
                       v-model="editedItem.ticketDetail"
                       label="内容"
                       maxlength="512"
+                      variant="outlined"
                       :rules="validationRules.ticketDetail"
-                    ></v-text-field>
+                    ></v-textarea>
                   </v-col>
                 </v-row>
                 <v-row>
@@ -165,6 +182,7 @@
                     <v-select
                       v-model="editedItem.userId"
                       label="担当者"
+                      variant="outlined"
                       :items="userList"
                       item-title="userName"
                       item-value="id"
@@ -176,6 +194,7 @@
                     <v-select
                       v-model="editedItem.categoryId"
                       label="カテゴリ"
+                      variant="outlined"
                       :items="categoryList"
                       item-title="categoryName"
                       item-value="id"
@@ -222,6 +241,7 @@
 <script setup>
 import { onMounted, ref, watch } from "vue";
 import draggable from "vuedraggable";
+import { apiUrl } from "../../config.js";
 
 const props = defineProps({
   isAddTicket: Boolean,
@@ -313,8 +333,6 @@ const dialog = ref(false);
 //   completed: [],
 // });
 
-
-
 const tasks = ref({
   todos: [],
   inProgress: [],
@@ -357,19 +375,19 @@ async function validate() {
 }
 
 async function fetchData() {
-  const response = await fetch("/api/v1/td_ticket");
+  const response = await fetch(apiUrl + "/api/v1/td_ticket");
   const data = await response.json();
   return data;
 }
 
 async function fetchUserData() {
-  const response = await fetch("/api/v1/tm_users");
+  const response = await fetch(apiUrl + "/api/v1/tm_users");
   const data = await response.json();
   return data;
 }
 
 async function fetchCategoryData() {
-  const response = await fetch("/api/v1/tm_category");
+  const response = await fetch(apiUrl + "/api/v1/tm_category");
   const data = await response.json();
   return data;
 }
@@ -383,18 +401,21 @@ async function updateData() {
     ticketDetail: editedItem.value.ticketDetail,
   };
 
-  const response = await fetch(`/api/v1/td_ticket/${editedItem.value.id}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(body),
-  });
+  const response = await fetch(
+    apiUrl + `/api/v1/td_ticket/${editedItem.value.id}`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    }
+  );
   return response;
 }
 
 async function deleteData(ticketId) {
-  const response = await fetch(`/api/v1/td_ticket/${ticketId}`, {
+  const response = await fetch(apiUrl + `/api/v1/td_ticket/${ticketId}`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
@@ -497,17 +518,20 @@ function addItem(event) {
 }
 
 async function loadTicketData() {
+  tasks.value.todos = [];
+  tasks.value.inProgress = [];
+  tasks.value.completed = [];
 
-  tasks.value.todos=[];
-  tasks.value.inProgress=[];
-  tasks.value.completed=[];
-
-  const data = await fetchData();
-  data.forEach((item) => {
-    if (item.status === 0) tasks.value.todos.push(item);
-    else if (item.status === 1) tasks.value.inProgress.push(item);
-    else tasks.value.completed.push(item);
-  });
+  try {
+    const data = await fetchData();
+    data.forEach((item) => {
+      if (item.status === 0) tasks.value.todos.push(item);
+      else if (item.status === 1) tasks.value.inProgress.push(item);
+      else tasks.value.completed.push(item);
+    });
+  } catch (error) {
+    throw error;
+  }
 }
 
 watch(isAddTicket, (newVal, oldVal) => {
@@ -522,6 +546,7 @@ onMounted(async () => {
   loadTicketData();
   userList.value = await fetchUserData();
   categoryList.value = await fetchCategoryData();
+  console.log(apiUrl);
 });
 </script>
 
@@ -531,5 +556,24 @@ onMounted(async () => {
 }
 .handle {
   cursor: pointer;
+}
+.title-todos,
+.title-inprogress,
+.title-completed {
+  display: inline-block;
+  border: 1px solid #ccc; /* 枠線の色と太さ */
+  padding: 3px; /* 内側の余白 */
+  color: white;
+  border-radius: 10px; /* 半径(px)を指定 */
+}
+
+.title-todos {
+  background-color: salmon;
+}
+.title-inprogress {
+  background-color: orange; /* 背景色 */
+}
+.title-completed {
+  background-color: springgreen; /* 背景色 */
 }
 </style>
