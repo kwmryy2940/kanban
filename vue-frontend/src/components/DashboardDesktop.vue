@@ -243,6 +243,8 @@ import { onMounted, ref, watch } from "vue";
 import draggable from "vuedraggable";
 import { apiUrl } from "../../config.js";
 
+const emit = defineEmits(['add-data-completed']);
+
 const props = defineProps({
   isAddTicket: Boolean,
 });
@@ -250,88 +252,6 @@ const props = defineProps({
 const isAddTicket = () => props.isAddTicket;
 
 const dialog = ref(false);
-
-// const tasks = ref({
-//   todos: [
-//     {
-//       id: 1,
-//       userId: 1,
-//       categoryId: 1,
-//       status: 0,
-//       ticketTitle: "お買い物",
-//       ticketDetail: "ネギ、醤油、みそを購入する",
-//       createdAt: "2024-05-05T16:43:14",
-//       updatedAt: "2024-05-05T16:43:14",
-//       user: {
-//         id: 1,
-//         userName: "test_user",
-//         userEmail: null,
-//         password: null,
-//         adminFlg: 0,
-//         createdAt: "2024-05-05T16:39:37",
-//         updatedAt: "2024-05-05T16:39:37",
-//       },
-//       category: {
-//         id: 1,
-//         categoryName: "仕事",
-//         createdAt: "2024-05-05T16:37:18",
-//         updatedAt: "2024-05-05T16:37:18",
-//       },
-//     },
-//     {
-//       id: 3,
-//       userId: 1,
-//       categoryId: 1,
-//       status: 0,
-//       ticketTitle: "create_test",
-//       ticketDetail: "create_test_detail",
-//       createdAt: "2024-05-05T22:35:00",
-//       updatedAt: "2024-05-05T22:35:00",
-//       user: {
-//         id: 1,
-//         userName: "test_user",
-//         userEmail: null,
-//         password: null,
-//         adminFlg: 0,
-//         createdAt: "2024-05-05T16:39:37",
-//         updatedAt: "2024-05-05T16:39:37",
-//       },
-//       category: {
-//         id: 1,
-//         categoryName: "仕事",
-//         createdAt: "2024-05-05T16:37:18",
-//         updatedAt: "2024-05-05T16:37:18",
-//       },
-//     },
-//     {
-//       id: 4,
-//       userId: 1,
-//       categoryId: 2,
-//       status: 0,
-//       ticketTitle: "create_test",
-//       ticketDetail: "create_test_detail",
-//       createdAt: "2024-05-05T22:36:54",
-//       updatedAt: "2024-05-05T22:36:54",
-//       user: {
-//         id: 1,
-//         userName: "test_user",
-//         userEmail: null,
-//         password: null,
-//         adminFlg: 0,
-//         createdAt: "2024-05-05T16:39:37",
-//         updatedAt: "2024-05-05T16:39:37",
-//       },
-//       category: {
-//         id: 2,
-//         categoryName: "趣味",
-//         createdAt: "2024-05-05T16:37:18",
-//         updatedAt: "2024-05-05T16:37:18",
-//       },
-//     },
-//   ],
-//   inProgress: [],
-//   completed: [],
-// });
 
 const tasks = ref({
   todos: [],
@@ -539,6 +459,10 @@ watch(isAddTicket, (newVal, oldVal) => {
     loadTicketData();
     noticeSnackBar.value = true;
     noticeSnackBarText.value = "タスクを登録しました。";
+    emit('add-data-completed',true);
+  }
+  else{
+    emit('add-data-completed',false);
   }
 });
 
@@ -546,7 +470,6 @@ onMounted(async () => {
   loadTicketData();
   userList.value = await fetchUserData();
   categoryList.value = await fetchCategoryData();
-  console.log(apiUrl);
 });
 </script>
 

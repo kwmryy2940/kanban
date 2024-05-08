@@ -9,12 +9,22 @@
       absolute
     ></v-switch>
     <template v-if="mobile">
-      <DashboardMobile />
+      <DashboardMobile
+        :isAddTicket="isAddTicket"
+        @add-data-completed-mobile="onAddDataCompletedMobile"
+      />
     </template>
     <template v-else>
-      <DashboardDesktop :isAddTicket="isAddTicket" />
+      <DashboardDesktop
+        :isAddTicket="isAddTicket"
+        @add-data-completed="onAddDataCompleted"
+      />
     </template>
-    <AddKanban @add-data="addData" />
+    <AddKanban
+      :isAddCompletedTicketByMobile="isAddCompletedTicketByMobile"
+      :isAddCompletedTicket="isAddCompletedTicket"
+      @add-data="onAddData"
+    />
   </div>
 </template>
 
@@ -26,8 +36,16 @@ import AddKanban from "./AddKanban.vue";
 
 const mobile = ref(false);
 const isAddTicket = ref(false);
+const isAddCompletedTicket = ref(false);
+const isAddCompletedTicketByMobile = ref(false);
 
-function addData(addData) {
+function onAddData(addData) {
   isAddTicket.value = addData;
+}
+function onAddDataCompleted(addDataCompleted) {
+  isAddCompletedTicket.value = addDataCompleted;
+}
+function onAddDataCompletedMobile(addDataCompletedByMobile) {
+  isAddCompletedTicketByMobile.value = addDataCompletedByMobile;
 }
 </script>
