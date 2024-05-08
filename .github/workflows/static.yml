@@ -39,8 +39,8 @@ jobs:
         uses: actions/configure-pages@v5
       - run: npm ci
       - run: npm run build
-        env:
-          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+       # env:
+        #  VITE_API_URL: ${{ secrets.VITE_API_URL }}
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
