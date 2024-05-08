@@ -7,9 +7,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class CorsConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/api/**")  // 適用するパスを指定
-                .allowedOrigins("http://localhost:5173") // 許可するオリジンを指定
-                .allowedOrigins("http://localhost:5174") // 許可するオリジンを指定
+        // registry.addMapping("/api/**")  // 適用するパスを指定
+        registry.addMapping("/kanban/api/**")  // 適用するパスを指定
+                // .allowedOrigins("http://localhost:5173") // 許可するオリジンを指定
+                // .allowedOrigins("http://localhost:5174") // 許可するオリジンを指定
+                // .allowedOrigins("http://localhost:5175/kanban") // 許可するオリジンを指定
                 .allowedMethods("GET", "POST", "PUT", "DELETE"); // 許可するHTTPメソッドを指定
     }
 }

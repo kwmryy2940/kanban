@@ -35,6 +35,21 @@ export const commonFunctions = {
       throw error;
     }
   },
+  // チケットデータを登録する
+  registerData: async (editedItem, apiUrl) => {
+    const body = {
+      ...editedItem,
+    };
+
+    const response = await fetch(apiUrl + "/api/v1/td_ticket", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+    return response;
+  },
   // チケットデータを更新する
   updateData: async (editedItem, apiUrl) => {
     const body = {

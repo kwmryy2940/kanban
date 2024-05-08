@@ -199,9 +199,9 @@
 
 <script setup>
 import { computed, onMounted, ref, watch } from "vue";
-import { apiUrl } from "../../config.js";
 import { commonFunctions } from "../utils/utils.js";
 
+const apiUrl = import.meta.env.VITE_API_URL
 const dialog = ref(false);
 const tab = ref(null);
 

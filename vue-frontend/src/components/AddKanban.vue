@@ -98,7 +98,8 @@
 
 <script setup>
 import { onMounted, ref, watch } from "vue";
-import { apiUrl } from "../../config";
+import { commonFunctions } from "../utils/utils";
+const apiUrl = import.meta.env.VITE_API_URL;
 
 const props = defineProps({
   isAddCompletedTicket: Boolean,
@@ -151,33 +152,6 @@ async function clearItems() {
   editedItem.value.ticketDetail = "";
 }
 
-async function fetchUserData() {
-  const response = await fetch(apiUrl + "/api/v1/tm_users");
-  const data = await response.json();
-  return data;
-}
-
-async function fetchCategoryData() {
-  const response = await fetch(apiUrl + "/api/v1/tm_category");
-  const data = await response.json();
-  return data;
-}
-
-async function registerData() {
-  const body = {
-    ...editedItem.value,
-  };
-
-  const response = await fetch(apiUrl + "/api/v1/td_ticket", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(body),
-  });
-  return response;
-}
-
 async function save() {
   // 入力フォームのバリデーションチェック
   const validationResult = await validate();
@@ -189,7 +163,10 @@ async function save() {
   }
 
   try {
-    const response = await registerData();
+    const response = await commonFunctions.registerData(
+      editedItem.value,
+      apiUrl
+    );
     // 200 OK以外のレスポンスの場合はエラーをスロー
     if (!response.ok) {
       // エラー時にsnackbarの状態を更新
@@ -217,7 +194,7 @@ watch(isAddCompletedTicketByMobile, (newVal, oldVal) => {
 });
 
 onMounted(async () => {
-  userList.value = await fetchUserData();
-  categoryList.value = await fetchCategoryData();
+  userList.value = await commonFunctions.fetchUserData(apiUrl);
+  categoryList.value = await commonFunctions.fetchCategoryData(apiUrl);
 });
 </script>
