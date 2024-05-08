@@ -28,16 +28,14 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: vue-frontend
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Setup Pages
         uses: actions/configure-pages@v5
-      - run: |
-          pwd
-          cd vue-frontend
-          pwd
-#      - run: cd $GITHUB_WORKSPACE/vue-frontend
       - run: npm ci
       - run: npm run build
         env:
