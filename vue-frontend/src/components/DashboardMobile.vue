@@ -253,8 +253,6 @@ onMounted(async () => {
 });
 
 watch(isAddTicket, (newVal, oldVal) => {
-  console.log("isAddTicket.newVal=",newVal);
-  console.log("isAddTicket.oldVal=",oldVal);
   if (oldVal === false && newVal === true) {
     loadTicketData();
     noticeSnackBar.value = true;
