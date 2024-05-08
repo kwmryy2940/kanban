@@ -24,7 +24,7 @@
                     <template> Task-{{ item.id }} </template>
                   </v-card-subtitle>
                   <v-btn icon="mdi-pencil" size="x-small" @click=""></v-btn>
-                  <v-btn icon="mdi-delete" size="x-small" @click=""></v-btn>
+                  <v-btn icon="mdi-delete" size="x-small" @click="deleteTicketData(item.id,item.status)"></v-btn>
                 </v-card>
               </v-list>
             </div>
@@ -95,88 +95,9 @@
 
 <script setup>
 import { onMounted, ref, watch } from "vue";
+import { apiUrl } from "../../config.js";
 const tab = ref(null);
-// const tasks = ref({
-//   todos: [
-//     {
-//       id: 1,
-//       userId: 1,
-//       categoryId: 1,
-//       status: 0,
-//       ticketTitle: "お買い物",
-//       ticketDetail: "ネギ、醤油、みそを購入する",
-//       createdAt: "2024-05-05T16:43:14",
-//       updatedAt: "2024-05-05T16:43:14",
-//       user: {
-//         id: 1,
-//         userName: "test_user",
-//         userEmail: null,
-//         password: null,
-//         adminFlg: 0,
-//         createdAt: "2024-05-05T16:39:37",
-//         updatedAt: "2024-05-05T16:39:37",
-//       },
-//       category: {
-//         id: 1,
-//         categoryName: "仕事",
-//         createdAt: "2024-05-05T16:37:18",
-//         updatedAt: "2024-05-05T16:37:18",
-//       },
-//     },
-//     {
-//       id: 3,
-//       userId: 1,
-//       categoryId: 1,
-//       status: null,
-//       ticketTitle: "create_test",
-//       ticketDetail: "create_test_detail",
-//       createdAt: "2024-05-05T22:35:00",
-//       updatedAt: "2024-05-05T22:35:00",
-//       user: {
-//         id: 1,
-//         userName: "test_user",
-//         userEmail: null,
-//         password: null,
-//         adminFlg: 0,
-//         createdAt: "2024-05-05T16:39:37",
-//         updatedAt: "2024-05-05T16:39:37",
-//       },
-//       category: {
-//         id: 1,
-//         categoryName: "仕事",
-//         createdAt: "2024-05-05T16:37:18",
-//         updatedAt: "2024-05-05T16:37:18",
-//       },
-//     },
-//     {
-//       id: 4,
-//       userId: 1,
-//       categoryId: 2,
-//       status: 0,
-//       ticketTitle: "create_test",
-//       ticketDetail: "create_test_detail",
-//       createdAt: "2024-05-05T22:36:54",
-//       updatedAt: "2024-05-05T22:36:54",
-//       user: {
-//         id: 1,
-//         userName: "test_user",
-//         userEmail: null,
-//         password: null,
-//         adminFlg: 0,
-//         createdAt: "2024-05-05T16:39:37",
-//         updatedAt: "2024-05-05T16:39:37",
-//       },
-//       category: {
-//         id: 2,
-//         categoryName: "趣味",
-//         createdAt: "2024-05-05T16:37:18",
-//         updatedAt: "2024-05-05T16:37:18",
-//       },
-//     },
-//   ],
-//   inProgress: [],
-//   completed: [],
-// });
+
 const emit = defineEmits(['add-data-completed-mobile']);
 
 const props = defineProps({
@@ -248,6 +169,53 @@ async function loadTicketData() {
     throw error;
   }
 }
+
+async function deleteData(ticketId) {
+  const response = await fetch(apiUrl + `/api/v1/td_ticket/${ticketId}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  return response;
+}
+
+async function deleteTicketData(ticketId, status) {
+  try {
+    const response = await deleteData(ticketId);
+    // 200 OK以外のレスポンスの場合はエラーをスロー
+    if (!response.ok) {
+      // エラー時にsnackbarの状態を更新
+      errorSnackBar.value = true;
+      errorSnackBarText.value = "ユーザー情報の削除に失敗しました。";
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    // リストから該当ユーザー情報を削除
+    if (status === 0) {
+      const index = tasks.value.todos.findIndex(
+        (ticket) => ticket.id === ticketId
+      );
+      tasks.value.todos.splice(index, 1);
+    } else if (status === 1) {
+      const index = tasks.value.inProgress.findIndex(
+        (ticket) => ticket.id === ticketId
+      );
+      tasks.value.inProgress.splice(index, 1);
+    } else {
+      const index = tasks.value.completed.findIndex(
+        (ticket) => ticket.id === ticketId
+      );
+      tasks.value.completed.splice(index, 1);
+    }
+  } catch (error) {
+    // エラー時にsnackbarの状態を更新
+    errorSnackBar.value = true;
+    errorSnackBarText.value = "ユーザー情報の削除に失敗しました。";
+    throw error;
+  }
+}
+
 onMounted(async () => {
   loadTicketData();
 });
