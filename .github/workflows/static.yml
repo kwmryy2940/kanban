@@ -33,9 +33,7 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup Pages
         uses: actions/configure-pages@v5
-      - name: Change directory
       - run: cd vue-frontend
-      - name: Install dependencies
       - run: npm ci
       - run: npm run build
         env:
