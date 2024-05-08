@@ -23,4 +23,5 @@ export default defineConfig({
     },
     port:5174
   },
+  output:'export',
 });
