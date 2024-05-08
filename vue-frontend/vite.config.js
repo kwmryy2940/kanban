@@ -22,6 +22,5 @@ export default defineConfig({
       "/api": "http://localhost:8080",
     },
     port:5174
-  },
-  output:'export',
+  }
 });
