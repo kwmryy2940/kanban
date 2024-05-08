@@ -23,7 +23,7 @@
                     </template>
                     <template> Task-{{ item.id }} </template>
                   </v-card-subtitle>
-                  <v-btn icon="mdi-pencil" size="x-small" @click=""></v-btn>
+                  <v-btn icon="mdi-pencil" size="x-small" @click="openEditDiaolog(item)"></v-btn>
                   <v-btn icon="mdi-delete" size="x-small" @click="deleteTicketData(item.id,item.status)"></v-btn>
                 </v-card>
               </v-list>
@@ -43,8 +43,8 @@
                     </template>
                     <template> Task-{{ item.id }} </template>
                   </v-card-subtitle>
-                  <v-btn icon="mdi-pencil" size="x-small" @click=""></v-btn>
-                  <v-btn icon="mdi-delete" size="x-small" @click=""></v-btn>
+                  <v-btn icon="mdi-pencil" size="x-small" @click="openEditDiaolog(item)"></v-btn>
+                  <v-btn icon="mdi-delete" size="x-small" @click="deleteTicketData(item.id,item.status)"></v-btn>
                 </v-card>
               </v-list>
             </div>
@@ -63,14 +63,94 @@
                     </template>
                     <template> Task-{{ item.id }} </template>
                   </v-card-subtitle>
-                  <v-btn icon="mdi-pencil" size="x-small" @click=""></v-btn>
-                  <v-btn icon="mdi-delete" size="x-small" @click=""></v-btn>
+                  <v-btn icon="mdi-pencil" size="x-small" @click="openEditDiaolog(item)"></v-btn>
+                  <v-btn icon="mdi-delete" size="x-small" @click="deleteTicketData(item.id,item.status)"></v-btn>
                 </v-card>
               </v-list>
             </div>
           </v-tabs-window-item>
         </v-tabs-window>
       </v-sheet>
+      <v-dialog v-model="dialog">
+        <v-card>
+          <v-card-title>タスク編集</v-card-title>
+          <v-card-text>
+            <v-container>
+              <v-form ref="inputForm">
+                <v-row>
+                  <v-col cols="12">
+                    <v-text-field
+                      v-model="editedItem.ticketTitle"
+                      label="タイトル"
+                      variant="outlined"
+                      maxlength="128"
+                      :rules="validationRules.ticketTitle"
+                      ><span style="color: red"> *</span></v-text-field
+                    >
+                  </v-col>
+                  <v-col cols="12">
+                    <v-textarea
+                      v-model="editedItem.ticketDetail"
+                      label="内容"
+                      maxlength="512"
+                      variant="outlined"
+                      :rules="validationRules.ticketDetail"
+                    ></v-textarea>
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col>
+                    <v-select
+                      v-model="editedItem.userId"
+                      label="担当者"
+                      variant="outlined"
+                      :items="userList"
+                      item-title="userName"
+                      item-value="id"
+                      return-value
+                    >
+                    </v-select>
+                  </v-col>
+                  <v-col>
+                    <v-select
+                      v-model="editedItem.categoryId"
+                      label="カテゴリ"
+                      variant="outlined"
+                      :items="categoryList"
+                      item-title="categoryName"
+                      item-value="id"
+                      return-value
+                    >
+                    </v-select>
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col>
+                    <v-select
+                    v-model="editedItem.status"
+                      label="状態"
+                      variant="outlined"
+                      :items="statusList"
+                      item-title="text"
+                      item-value="value"
+                      return-value
+                    >
+                    </v-select>
+                  </v-col>
+                </v-row>
+              </v-form>
+            </v-container>
+          </v-card-text>
+          <v-card-actions>
+            <v-btn color="blue-darken-1" variant="text" @click="dialog = false">
+              キャンセル
+            </v-btn>
+            <v-btn color="blue-darken-1" variant="text" @click="editTicketData">
+              登録
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
       <v-snackbar v-model="noticeSnackBar" :timeout="5000" color="success">
         <v-icon class="me-2" size="small"> mdi-check-circle-outline </v-icon>
         {{ noticeSnackBarText }}
@@ -94,8 +174,10 @@
 </template>
 
 <script setup>
-import { onMounted, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { apiUrl } from "../../config.js";
+
+const dialog=ref(false);
 const tab = ref(null);
 
 const emit = defineEmits(['add-data-completed-mobile']);
@@ -129,6 +211,11 @@ const inputForm = ref(null);
 
 const userList = ref([]);
 const categoryList = ref([]);
+const statusList = computed(() => [
+  { text: "未着手", value: 0 },
+  { text: "処理中", value: 1 },
+  { text: "完了", value: 2 },
+]);
 
 // 各項目の入力に対するバリデーションルール
 const validationRules = ref({
@@ -153,6 +240,20 @@ async function fetchData() {
   const data = await response.json();
   return data;
 }
+
+async function fetchUserData() {
+  const response = await fetch(apiUrl + "/api/v1/tm_users");
+  const data = await response.json();
+  return data;
+}
+
+async function fetchCategoryData() {
+  const response = await fetch(apiUrl + "/api/v1/tm_category");
+  const data = await response.json();
+  return data;
+}
+
+
 async function loadTicketData() {
   tasks.value.todos = [];
   tasks.value.inProgress = [];
@@ -166,6 +267,65 @@ async function loadTicketData() {
       else tasks.value.completed.push(item);
     });
   } catch (error) {
+    throw error;
+  }
+}
+
+function openEditDiaolog(task) {
+  editedItem.value.id = task.id;
+  editedItem.value.userId = task.userId;
+  editedItem.value.categoryId = task.categoryId;
+  editedItem.value.status = task.status;
+  editedItem.value.ticketTitle = task.ticketTitle;
+  editedItem.value.ticketDetail = task.ticketDetail;
+  dialog.value = true;
+}
+
+async function updateData() {
+  const body = {
+    userId: editedItem.value.userId,
+    categoryId: editedItem.value.categoryId,
+    status: editedItem.value.status,
+    ticketTitle: editedItem.value.ticketTitle,
+    ticketDetail: editedItem.value.ticketDetail,
+  };
+
+  const response = await fetch(
+    apiUrl + `/api/v1/td_ticket/${editedItem.value.id}`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    }
+  );
+  return response;
+}
+async function editTicketData() {
+  // 入力フォームのバリデーションチェック
+  const validationResult = await validate();
+  if (!validationResult) {
+    // エラー時にsnackbarの状態を更新
+    errorSnackBar.value = true;
+    errorSnackBarText.value = "正しく入力されていない項目があります。";
+    throw new Error("Validation error.");
+  }
+  try {
+    const response = await updateData();
+    // 200 OK以外のレスポンスの場合はエラーをスロー
+    if (!response.ok) {
+      // エラー時にsnackbarの状態を更新
+      errorSnackBar.value = true;
+      errorSnackBarText.value = "タスクの更新に失敗しました。";
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    loadTicketData();
+    dialog.value = false;
+  } catch (error) {
+    // エラー時にsnackbarの状態を更新
+    errorSnackBar.value = true;
+    errorSnackBarText.value = "タスクの更新に失敗しました。";
     throw error;
   }
 }
@@ -218,6 +378,8 @@ async function deleteTicketData(ticketId, status) {
 
 onMounted(async () => {
   loadTicketData();
+  userList.value = await fetchUserData();
+  categoryList.value = await fetchCategoryData();
 });
 
 watch(isAddTicket, (newVal, oldVal) => {
