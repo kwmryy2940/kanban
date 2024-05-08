@@ -46,3 +46,11 @@ src/main/resources/static/assets/materialdesignicons-webfont.woff
 src/main/resources/static/assets/materialdesignicons-webfont.woff2
 src/main/resources/static/index.html
 vue-frontend/config.js
+vue-frontend/dist/index.html
+vue-frontend/dist/vite.svg
+vue-frontend/dist/assets/index.css
+vue-frontend/dist/assets/index.js
+vue-frontend/dist/assets/materialdesignicons-webfont.eot
+vue-frontend/dist/assets/materialdesignicons-webfont.ttf
+vue-frontend/dist/assets/materialdesignicons-webfont.woff
+vue-frontend/dist/assets/materialdesignicons-webfont.woff2
