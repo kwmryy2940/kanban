@@ -295,37 +295,6 @@ async function validate() {
   return validationResult.valid;
 }
 
-async function updateData() {
-  const body = {
-    userId: editedItem.value.userId,
-    categoryId: editedItem.value.categoryId,
-    status: editedItem.value.status,
-    ticketTitle: editedItem.value.ticketTitle,
-    ticketDetail: editedItem.value.ticketDetail,
-  };
-
-  const response = await fetch(
-    apiUrl + `/api/v1/td_ticket/${editedItem.value.id}`,
-    {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(body),
-    }
-  );
-  return response;
-}
-
-async function deleteData(ticketId) {
-  const response = await fetch(apiUrl + `/api/v1/td_ticket/${ticketId}`, {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-  return response;
-}
 function openEditDiaolog(task) {
   editedItem.value.id = task.id;
   editedItem.value.userId = task.userId;
@@ -346,7 +315,7 @@ async function editTicketData() {
     throw new Error("Validation error.");
   }
   try {
-    const response = await updateData();
+    const response = await commonFunctions.updateData(editedItem.value, apiUrl);
     // 200 OK以外のレスポンスの場合はエラーをスロー
     if (!response.ok) {
       // エラー時にsnackbarの状態を更新
@@ -354,7 +323,7 @@ async function editTicketData() {
       errorSnackBarText.value = "タスクの更新に失敗しました。";
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    loadTicketData();
+    await commonFunctions.loadTicketData(tasks,apiUrl);
     dialog.value = false;
   } catch (error) {
     // エラー時にsnackbarの状態を更新
@@ -366,7 +335,7 @@ async function editTicketData() {
 
 async function deleteTicketData(ticketId, status) {
   try {
-    const response = await deleteData(ticketId);
+    const response = await commonFunctions.deleteData(apiUrl,ticketId);
     // 200 OK以外のレスポンスの場合はエラーをスロー
     if (!response.ok) {
       // エラー時にsnackbarの状態を更新
@@ -417,29 +386,12 @@ function addItem(event) {
   } else {
     editedItem.value.status = 2;
   }
-  updateData();
-}
-
-async function loadTicketData() {
-  tasks.value.todos = [];
-  tasks.value.inProgress = [];
-  tasks.value.completed = [];
-
-  try {
-    const data = await commonFunctions.fetchTicketData(apiUrl);
-    data.forEach((item) => {
-      if (item.status === 0) tasks.value.todos.push(item);
-      else if (item.status === 1) tasks.value.inProgress.push(item);
-      else tasks.value.completed.push(item);
-    });
-  } catch (error) {
-    throw error;
-  }
+  commonFunctions.updateData(editedItem.value,apiUrl);
 }
 
 watch(isAddTicket, (newVal, oldVal) => {
   if (oldVal === false && newVal === true) {
-    loadTicketData();
+    commonFunctions.loadTicketData(tasks,apiUrl);
     noticeSnackBar.value = true;
     noticeSnackBarText.value = "タスクを登録しました。";
     emit('add-data-completed',true);
@@ -450,7 +402,7 @@ watch(isAddTicket, (newVal, oldVal) => {
 });
 
 onMounted(async () => {
-  loadTicketData();
+  await commonFunctions.loadTicketData(tasks,apiUrl);
   userList.value = await commonFunctions.fetchUserData(apiUrl);
   categoryList.value = await commonFunctions.fetchCategoryData(apiUrl);
 });

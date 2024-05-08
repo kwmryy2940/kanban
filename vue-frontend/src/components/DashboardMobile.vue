@@ -23,8 +23,16 @@
                     </template>
                     <template> Task-{{ item.id }} </template>
                   </v-card-subtitle>
-                  <v-btn icon="mdi-pencil" size="x-small" @click="openEditDiaolog(item)"></v-btn>
-                  <v-btn icon="mdi-delete" size="x-small" @click="deleteTicketData(item.id,item.status)"></v-btn>
+                  <v-btn
+                    icon="mdi-pencil"
+                    size="x-small"
+                    @click="openEditDiaolog(item)"
+                  ></v-btn>
+                  <v-btn
+                    icon="mdi-delete"
+                    size="x-small"
+                    @click="deleteTicketData(item.id, item.status)"
+                  ></v-btn>
                 </v-card>
               </v-list>
             </div>
@@ -43,8 +51,16 @@
                     </template>
                     <template> Task-{{ item.id }} </template>
                   </v-card-subtitle>
-                  <v-btn icon="mdi-pencil" size="x-small" @click="openEditDiaolog(item)"></v-btn>
-                  <v-btn icon="mdi-delete" size="x-small" @click="deleteTicketData(item.id,item.status)"></v-btn>
+                  <v-btn
+                    icon="mdi-pencil"
+                    size="x-small"
+                    @click="openEditDiaolog(item)"
+                  ></v-btn>
+                  <v-btn
+                    icon="mdi-delete"
+                    size="x-small"
+                    @click="deleteTicketData(item.id, item.status)"
+                  ></v-btn>
                 </v-card>
               </v-list>
             </div>
@@ -63,8 +79,16 @@
                     </template>
                     <template> Task-{{ item.id }} </template>
                   </v-card-subtitle>
-                  <v-btn icon="mdi-pencil" size="x-small" @click="openEditDiaolog(item)"></v-btn>
-                  <v-btn icon="mdi-delete" size="x-small" @click="deleteTicketData(item.id,item.status)"></v-btn>
+                  <v-btn
+                    icon="mdi-pencil"
+                    size="x-small"
+                    @click="openEditDiaolog(item)"
+                  ></v-btn>
+                  <v-btn
+                    icon="mdi-delete"
+                    size="x-small"
+                    @click="deleteTicketData(item.id, item.status)"
+                  ></v-btn>
                 </v-card>
               </v-list>
             </div>
@@ -127,7 +151,7 @@
                 <v-row>
                   <v-col>
                     <v-select
-                    v-model="editedItem.status"
+                      v-model="editedItem.status"
                       label="状態"
                       variant="outlined"
                       :items="statusList"
@@ -178,10 +202,10 @@ import { computed, onMounted, ref, watch } from "vue";
 import { apiUrl } from "../../config.js";
 import { commonFunctions } from "../utils/utils.js";
 
-const dialog=ref(false);
+const dialog = ref(false);
 const tab = ref(null);
 
-const emit = defineEmits(['add-data-completed-mobile']);
+const emit = defineEmits(["add-data-completed-mobile"]);
 
 const props = defineProps({
   isAddTicket: Boolean,
@@ -235,23 +259,6 @@ async function validate() {
   return validationResult.valid;
 }
 
-async function loadTicketData() {
-  tasks.value.todos = [];
-  tasks.value.inProgress = [];
-  tasks.value.completed = [];
-
-  try {
-    const data = await commonFunctions.fetchTicketData(apiUrl);;
-    data.forEach((item) => {
-      if (item.status === 0) tasks.value.todos.push(item);
-      else if (item.status === 1) tasks.value.inProgress.push(item);
-      else tasks.value.completed.push(item);
-    });
-  } catch (error) {
-    throw error;
-  }
-}
-
 function openEditDiaolog(task) {
   editedItem.value.id = task.id;
   editedItem.value.userId = task.userId;
@@ -262,27 +269,6 @@ function openEditDiaolog(task) {
   dialog.value = true;
 }
 
-async function updateData() {
-  const body = {
-    userId: editedItem.value.userId,
-    categoryId: editedItem.value.categoryId,
-    status: editedItem.value.status,
-    ticketTitle: editedItem.value.ticketTitle,
-    ticketDetail: editedItem.value.ticketDetail,
-  };
-
-  const response = await fetch(
-    apiUrl + `/api/v1/td_ticket/${editedItem.value.id}`,
-    {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(body),
-    }
-  );
-  return response;
-}
 async function editTicketData() {
   // 入力フォームのバリデーションチェック
   const validationResult = await validate();
@@ -293,7 +279,7 @@ async function editTicketData() {
     throw new Error("Validation error.");
   }
   try {
-    const response = await updateData();
+    const response = await commonFunctions.updateData(editedItem.value,apiUrl);
     // 200 OK以外のレスポンスの場合はエラーをスロー
     if (!response.ok) {
       // エラー時にsnackbarの状態を更新
@@ -301,7 +287,7 @@ async function editTicketData() {
       errorSnackBarText.value = "タスクの更新に失敗しました。";
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    loadTicketData();
+    await commonFunctions.loadTicketData(tasks, apiUrl);
     dialog.value = false;
   } catch (error) {
     // エラー時にsnackbarの状態を更新
@@ -311,19 +297,9 @@ async function editTicketData() {
   }
 }
 
-async function deleteData(ticketId) {
-  const response = await fetch(apiUrl + `/api/v1/td_ticket/${ticketId}`, {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-  return response;
-}
-
 async function deleteTicketData(ticketId, status) {
   try {
-    const response = await deleteData(ticketId);
+    const response = await commonFunctions.deleteData(apiUrl,ticketId);
     // 200 OK以外のレスポンスの場合はエラーをスロー
     if (!response.ok) {
       // エラー時にsnackbarの状態を更新
@@ -358,20 +334,20 @@ async function deleteTicketData(ticketId, status) {
 }
 
 onMounted(async () => {
-  loadTicketData();
+  commonFunctions.loadTicketData(tasks, apiUrl);
   userList.value = await commonFunctions.fetchUserData(apiUrl);
   categoryList.value = await commonFunctions.fetchCategoryData(apiUrl);
 });
 
 watch(isAddTicket, (newVal, oldVal) => {
   if (oldVal === false && newVal === true) {
-    loadTicketData();
+    commonFunctions.loadTicketData(tasks, apiUrl);
     noticeSnackBar.value = true;
     noticeSnackBarText.value = "タスクを登録しました。";
 
-    emit('add-data-completed-mobile',true);
-  }else{
-    emit('add-data-completed-mobile',false);
+    emit("add-data-completed-mobile", true);
+  } else {
+    emit("add-data-completed-mobile", false);
   }
 });
 </script>
