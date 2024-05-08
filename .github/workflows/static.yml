@@ -43,7 +43,6 @@ jobs:
           VITE_API_URL: ${{ secrets.VITE_API_URL }}
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
-      - run: pwd
         with:
           # Upload entire repository
           path: './dist'
