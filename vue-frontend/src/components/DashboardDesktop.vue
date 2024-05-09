@@ -243,7 +243,8 @@ import { onMounted, ref, watch } from "vue";
 import draggable from "vuedraggable";
 import { commonFunctions } from "../utils/utils.js";
 
-const apiUrl = import.meta.env.VITE_API_URL
+// const apiUrl = import.meta.env.VITE_API_URL
+const apiUrl = "";
 const emit = defineEmits(['add-data-completed']);
 
 const props = defineProps({

@@ -99,7 +99,8 @@
 <script setup>
 import { onMounted, ref, watch } from "vue";
 import { commonFunctions } from "../utils/utils";
-const apiUrl = import.meta.env.VITE_API_URL;
+// const apiUrl = import.meta.env.VITE_API_URL;
+const apiUrl = "";
 
 const props = defineProps({
   isAddCompletedTicket: Boolean,

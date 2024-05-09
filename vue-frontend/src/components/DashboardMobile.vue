@@ -201,7 +201,8 @@
 import { computed, onMounted, ref, watch } from "vue";
 import { commonFunctions } from "../utils/utils.js";
 
-const apiUrl = import.meta.env.VITE_API_URL
+// const apiUrl = import.meta.env.VITE_API_URL
+const apiUrl = "";
 const dialog = ref(false);
 const tab = ref(null);
 

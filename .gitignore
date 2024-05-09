@@ -37,14 +37,6 @@ out/
 .vscode/
 .env
 docs/*
-src/main/resources/static/index.html
-src/main/resources/static/assets/index.css
-src/main/resources/static/assets/index.js
-src/main/resources/static/assets/materialdesignicons-webfont.eot
-src/main/resources/static/assets/materialdesignicons-webfont.ttf
-src/main/resources/static/assets/materialdesignicons-webfont.woff
-src/main/resources/static/assets/materialdesignicons-webfont.woff2
-src/main/resources/static/index.html
 vue-frontend/config.js
 vue-frontend/dist/index.html
 vue-frontend/dist/vite.svg
