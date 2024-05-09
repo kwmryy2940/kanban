@@ -24,6 +24,7 @@ public class CorsConfig implements WebMvcConfigurer {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**") // 適用するパスを指定
+                        .allowedHeaders("*")
                         .allowedOrigins(originLocalUrl, originUrl) // 許可するオリジンを指定
                         .allowedMethods("GET", "POST", "PUT", "DELETE"); // 許可するHTTPメソッドを指定
             }
