@@ -1,10 +1,11 @@
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 import vue from "@vitejs/plugin-vue";
+import { provide } from "vue";
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [vue()],
-  base: "/kanban",
+  base: "/",
   build: {
     // outDir: "../src/main/resources/static",
     emptyOutDir: true,
@@ -15,12 +16,15 @@ export default defineConfig({
         assetFileNames: `assets/[name].[ext]`,
       },
     },
-    outDir:"./dist"
+    outDir: "./dist",
   },
   server: {
     proxy: {
-      "/api": "http://localhost:8080",
+      "/api": {
+        target: process.env.VITE_API_URL,
+        changeOrigin: true,
+      },
     },
-    port:5174
-  }
+    port: 5174,
+  },
 });

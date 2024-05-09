@@ -17,18 +17,20 @@ public class SecurityConfig {
   SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
     http
-        .csrf(csrf -> csrf.disable());
-    // .ignoringRequestMatchers(
-    // "/api/v1/*"))
-    // // "/api/v1/tm_users", "/api/v1/tm_users/{userId}"))
-    // .authorizeHttpRequests(auth -> auth
-    // .anyRequest().permitAll());
+        // .csrf(csrf -> csrf.disable())
+        // .cors(cors->cors.disable());
+        .csrf(csrf -> csrf
+            .ignoringRequestMatchers(
+                "/api/v1/*"))
+        // "/api/v1/tm_users", "/api/v1/tm_users/{userId}"))
+        .authorizeHttpRequests(auth -> auth
+            .anyRequest().permitAll());
 
     // http
-    //     .csrf(csrf -> csrf.ignoringRequestMatchers(
-    //         "/api/v1/*"))
-    //     .authorizeHttpRequests(auth -> auth
-    //         .anyRequest().permitAll());
+    // .csrf(csrf -> csrf.ignoringRequestMatchers(
+    // "/api/v1/*"))
+    // .authorizeHttpRequests(auth -> auth
+    // .anyRequest().permitAll());
 
     return http.build();
   }
