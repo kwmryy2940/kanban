@@ -16,7 +16,7 @@ export default defineConfig({
         assetFileNames: `assets/[name].[ext]`,
       },
     },
-    outDir: "./dist",
+    outDir: "./dist" && "../src/main/resources/static",
   },
   server: {
     proxy: {
