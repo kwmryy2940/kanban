@@ -15,7 +15,7 @@ public class CorsConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/kanban/api/**") // 適用するパスを指定
-                .allowedOrigins("https://kwmryy2940.github.io/kanban") // 許可するオリジンを指定
+                .allowedOrigins("https://kwmryy2940.github.io") // 許可するオリジンを指定
                 .allowedMethods("GET", "POST", "PUT", "DELETE"); // 許可するHTTPメソッドを指定
     }
 }
